@@ -1,0 +1,53 @@
+1.Thread的构造器需要Runnable对象，调用start()方法为该线程执行初始化，然后调用Runnable的run()方法
+  ,在新线程启动该任务。
+2.创建新线程的方式：
+  1）实现Runnable接口，创建Thread对象，向构造器传入Runnable对象，调用start()
+  2) 继承Thread类，实现run方法，调用start()
+
+  3) 使用Executor创建和管理线程
+  4）实现Callable接口，泛型参数是从call方法返回的值
+      ：使用ExecutorService.submit()调用，submit()产生Future对象，它用Callable返回结果的类型进行
+        了参数化。
+  5) 使用线程工厂 ThreadFactory
+3.任何线程池中，现有线程在可能的情况下，都会被自动复用
+4.后台线程daemon,在程序运行的时候在后台提供一种通用服务的线程，这个线程不属于程序中不或缺的，
+  当所有非后台线程结束时，程序终止，并杀死进程中所有的后台线程。
+  必须在线程启动之前设置为后台线程(调用setDaemon()方法)。
+  在后台线程中创建的线程也是后台线程。
+5.线程中未捕获的异常：可通过ThreadFactory,将线程与异常处理(Thread.UncaughtExceptionHandler)绑定。
+6.在Thread类中设置静态域，Thread.setDefaultUncaughtExceptionHandler().设置程序的默认异常处理器。
+7.如果一个线程在对synchronized方法调用，在这个线程从该方法赶回之前，其他所有要调用类中synchronized方法的线程
+  都会被阻塞。
+8.对某个特定对象，是所有的synchronized方法共享同一个锁。synchronized static方法在类的范围内防止对static变量的并发访问。
+9.原子性：可以应用于除long double外的基本类型，JVM将64位的long double当作两个分离的32位操作执行。
+  volatile 可以赋予变量原子性(对于赋值与返回操作)。volatile，同步机制确保了变量在应用中的可视性。
+10.访问临界资源
+  1) 同步方法
+  2）Lock锁对象
+  3）同步对象
+  4）线程本地存储 ThreadLocal:通常设为private static,为每一个线程保存ThreadLocal所持有的变量的副本。为每个线程分配单独的存储
+11.线程的状态：新建，就绪，阻塞，死亡
+12.是线程进入阻塞状态：调用sleep().
+                     调用wait().直到线程得到notify()/notifyAll() 或 signal()/signalAll(),线程才会进入就绪状态
+                     线程在等待I/O完成
+                     试图获取锁但锁不可用
+13.中断：可以调用Future.cancel(true)方法中断当前线程，但是不能中断试图进行I/O操作或试图获取synchronized锁的线程
+，       Executor.shutdownNow()可以终止此Executor产生的所有线程
+        对于I/O引起的阻塞，可以关闭引起阻塞的底层资源来解除阻塞
+14.ReentrantLock上阻塞的线程具备被中断的能力。
+15.wait()（将释放锁）, notify(), notifyAll(),只能在同步方法或同步控制块里被调用
+16.Thread.interrupt()不是直接是线程停止，而是设置线程的中断状态为true，如果线程试图执行是可中断的阻塞操作，或已经被阻塞
+   如wait(),sleep(),抛出的InterruptedException会被捕获，同时重置中断状态。中断状态可以用Thread.interrupted()检查，
+   此方法会重置中断状态。不能中断试图进行I/O操作或试图获取synchronized锁的线程
+17.使用BlockingQueue。PipedReader/PipedWriter(可中断的I/O)
+18.产生死锁的条件，同时满足：互斥条件，请求与保持，资源不可抢占，循环等待
+19.CountDownLatch:在完成一组正在其他线程中执行的操作之前，它允许一个或多个线程一直等待。
+   CyclicBarrier:它允许一组线程互相等待，直到到达某个公共屏障点。
+   LinkedBlockingQueue/ArrayBlockingQueue:阻塞队列。如解决生产者与消费者问题。
+   DelayQueue:将线程放入延迟队列，在时间到期后可以取出，getDelay()返回延迟到期时间，compareTo()对延迟优先级排序。
+   PriorityBlockingQueue:
+   ScheduledExecutor(ScheduledThreadPoolExecutor):可以设置开始时间和间隔时间执行的线程。
+   Semaphore:对确定数的对象进行计数，对象的获取与释放须自己控制。一般将对象放入一个池中，由池控制信号梁的
+   许可与收回，对象的获取与放入。调用 acquire() 时无法保持同步锁，因为这会阻止将项返回到池中。
+20.TimeUnit.SECONDS.convert(100,TimeUnit.DAYS),把100天转换为秒值8640000
+21.静态的synchronized方法以Class对象作为锁。
